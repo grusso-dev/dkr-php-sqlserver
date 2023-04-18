@@ -12,3 +12,9 @@ services:
       SSQL_PID: Express
     volumes:
       - ./sqlserver-data:/var/opt/mssql
+  php:
+    build: ./php
+    ports:
+      - 80:80
+    volumes:
+      - ./php/src:/var/www/html    
