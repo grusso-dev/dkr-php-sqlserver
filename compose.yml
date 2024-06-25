@@ -2,7 +2,7 @@ version: '3.1'
 
 services:
   sqlserver:
-    image: mcr.microsoft.com/mssql/server:2019-CU3-ubuntu-18.04
+    image: mcr.microsoft.com/mssql/server:2019-latest
     container_name: sqlserver2019
     ports:
       - 1433:1433
@@ -10,11 +10,11 @@ services:
       ACCEPT_EULA: Y
       SA_PASSWORD: Password01
       SSQL_PID: Express
-    volumes:
-      - ./sqlserver-data:/var/opt/mssql
+#    volumes:
+#      - ./sqlserver-data:/var/opt/mssql
   php:
     build: ./php
     ports:
       - 80:80
     volumes:
-      - ./php/src:/var/www/html    
+      - ./php/src:/var/www/html
