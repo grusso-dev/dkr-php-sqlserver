@@ -14,6 +14,7 @@ services:
 #      - ./sqlserver-data:/var/opt/mssql
   php:
     build: ./php
+    container_name: php8-sql
     ports:
       - 80:80
     volumes:
