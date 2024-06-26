@@ -10,8 +10,8 @@ services:
       ACCEPT_EULA: Y
       SA_PASSWORD: Password01
       SSQL_PID: Express
-#    volumes:
-#      - ./sqlserver-data:/var/opt/mssql
+    volumes:
+      - ./sqlserver-data:/var/opt/mssql
   php:
     build: ./php
     container_name: php8-sql

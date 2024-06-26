@@ -8,20 +8,20 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Agregar la clave y el repositorio de Microsoft
-RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
-    && curl https://packages.microsoft.com/config/debian/$(lsb_release -rs)/prod.list > /etc/apt/sources.list.d/mssql-release.list \
-    && apt-get update
+#RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
+#    && curl https://packages.microsoft.com/config/debian/$(lsb_release -rs)/prod.list > /etc/apt/sources.list.d/mssql-release.list \
+#    && apt-get update
 
 # Instalar los controladores ODBC de SQL Server
-RUN ACCEPT_EULA=Y apt-get install -y msodbcsql17
+#RUN ACCEPT_EULA=Y apt-get install -y msodbcsql17
 
 # Instalar las extensiones de PHP necesarias para SQL Server
-RUN docker-php-ext-install pdo && docker-php-ext-enable pdo
-RUN pecl install sqlsrv pdo_sqlsrv \
-    && docker-php-ext-enable sqlsrv pdo_sqlsrv
+#RUN docker-php-ext-install pdo && docker-php-ext-enable pdo
+#RUN pecl install sqlsrv pdo_sqlsrv \
+#    && docker-php-ext-enable sqlsrv pdo_sqlsrv
 
 # Reiniciar Apache para aplicar los cambios
-RUN service apache2 restart
+#RUN service apache2 restart
 
 # Copiar los archivos de la aplicación al directorio web del contenedor
 COPY ./src/ /var/www/html
