@@ -1,0 +1,27 @@
+# Usa la imagen base de PHP 8.3 FPM basada en Alpine
+FROM php:8.3-fpm-alpine
+
+# Instala las dependencias necesarias
+RUN apk add --no-cache \
+    autoconf \
+    g++ \
+    make \
+    unixodbc-dev \
+    freetds-dev \
+    && pecl install pdo_sqlsrv \
+    && pecl install sqlsrv \
+    && docker-php-ext-enable pdo_sqlsrv sqlsrv
+
+# Limpia los archivos temporales y cachés
+RUN apk del --no-cache --purge \
+    autoconf \
+    g++ \
+    make
+
+# Establece el punto de entrada y el comando predeterminado
+#ENTRYPOINT ["docker-php-entrypoint"]
+#CMD ["php-fpm"]
+
+# Expone el puerto por defecto de php-fpm
+EXPOSE 9000
+
