@@ -16,6 +16,14 @@ services:
     build: ./php
     container_name: php8-sql
     ports:
-      - 80:80
+      - 8080:80
+    volumes:
+      - ./php/src:/var/www/html
+  php-alpine:
+    build: ./php-alpine
+    container_name: php8-alpn
+    ports:
+      - 9000:9000
+      - 8081:80
     volumes:
       - ./php/src:/var/www/html
