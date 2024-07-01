@@ -28,5 +28,6 @@ while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
 // Cerrar la conexión
 sqlsrv_free_stmt($stmt);
 sqlsrv_close($conn);
+
 ?>
 
