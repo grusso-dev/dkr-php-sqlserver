@@ -1,25 +1,50 @@
-FROM php:8.1-apache
+# Imagen base de PHP 8.4 con FPM en Alpine
+FROM php:8.4-fpm-alpine
 
-# Instalar extensiones necesarias
-RUN apt-get update && apt-get install -y \
-    unixodbc-dev \
-    libgssapi-krb5-2 \
-    && docker-php-ext-install pdo pdo_mysql
+# Aceptar EULA de Microsoft
+ENV ACCEPT_EULA=Y
 
-# Instalar driver SQL Server para PHP
-RUN pecl install sqlsrv pdo_sqlsrv \
-    && docker-php-ext-enable sqlsrv pdo_sqlsrv
+# Instalar herramientas básicas y dependencias de PHP
+RUN apk add --update --no-cache \
+    bash \
+    gnupg \
+    less \
+    libpng-dev \
+    libzip-dev \
+    su-exec \
+    unzip \
+    && rm -rf /var/cache/apk/*
 
-# Copiar archivo php.ini
-COPY ./php/php.ini /usr/local/etc/php/
+# Descargar e instalar ODBC y herramientas de SQL Server
+RUN curl -O https://download.microsoft.com/download/7/6/d/76de322a-d860-4894-9945-f0cc5d6a45f8/msodbcsql18_18.4.1.1-1_amd64.apk \
+    && curl -O https://download.microsoft.com/download/7/6/d/76de322a-d860-4894-9945-f0cc5d6a45f8/mssql-tools18_18.4.1.1-1_amd64.apk \
+    && curl -O https://download.microsoft.com/download/7/6/d/76de322a-d860-4894-9945-f0cc5d6a45f8/msodbcsql18_18.4.1.1-1_amd64.sig \
+    && curl -O https://download.microsoft.com/download/7/6/d/76de322a-d860-4894-9945-f0cc5d6a45f8/mssql-tools18_18.4.1.1-1_amd64.sig \
+    && curl https://packages.microsoft.com/keys/microsoft.asc | gpg --import - \
+    && gpg --verify msodbcsql18_18.4.1.1-1_amd64.sig msodbcsql18_18.4.1.1-1_amd64.apk \
+    && gpg --verify mssql-tools18_18.4.1.1-1_amd64.sig mssql-tools18_18.4.1.1-1_amd64.apk \
+    && apk add --allow-untrusted msodbcsql18_18.4.1.1-1_amd64.apk mssql-tools18_18.4.1.1-1_amd64.apk \
+    && rm *.apk *.sig
 
-# Configurar Apache
-RUN a2enmod rewrite
+# Copiar el instalador de extensiones PHP desde la imagen oficial
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/install-php-extensions
 
-# Copiar archivos de la aplicación
-COPY ./src /var/www/html/
+# Asignar permisos y ejecutar la instalación de extensiones
+RUN chmod +x /usr/bin/install-php-extensions \
+    && sync \
+    && install-php-extensions \
+        bcmath \
+        ds \
+        exif \
+        gd \
+        intl \
+        opcache \
+        pcntl \
+        pdo_sqlsrv \
+        redis \
+        sqlsrv \
+        zip
 
-# Configurar permisos
-#RUN chown -R www-data:www-data /var/www/html/ \
-#    && chmod -R 755 /var/www/html/
+# Definir el directorio de trabajo
+WORKDIR /var/www
 
