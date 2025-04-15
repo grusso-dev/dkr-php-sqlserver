@@ -9,9 +9,10 @@ Project structure:
 ├── compose.yaml
 ├── data
 |    └─ nginx
-|         └── default.conf
+|    |    └── default.conf
 |    ├── php
 |    ├── sqlserver
+|    |      └── sql_data 👉 #Recordar derle permisos de lectura y escritura (chmod -R 777 sql_data)
 |    └── src
 |         └── index.php
 └──php
