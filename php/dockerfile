@@ -1,34 +1,49 @@
-FROM php:8.2.20-apache
+# Imagen base de PHP 8.4 con FPM en Alpine
+FROM php:8.4-fpm-alpine
 
-# Instalar las dependencias necesarias
-RUN apt-get update && apt-get install -y \
+# Aceptar EULA de Microsoft
+ENV ACCEPT_EULA=Y
+
+# Instalar herramientas básicas y dependencias de PHP
+RUN apk add --update --no-cache \
+    bash \
     gnupg \
-    apt-transport-https \
-    unixodbc-dev \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    less \
+    libpng-dev \
+    libzip-dev \
+    su-exec \
+    unzip \
+    && rm -rf /var/cache/apk/*
 
-# Agregar la clave y el repositorio de Microsoft
-#RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
-#    && curl https://packages.microsoft.com/config/debian/$(lsb_release -rs)/prod.list > /etc/apt/sources.list.d/mssql-release.list \
-#    && apt-get update
+# Descargar e instalar ODBC y herramientas de SQL Server
+RUN curl -O https://download.microsoft.com/download/7/6/d/76de322a-d860-4894-9945-f0cc5d6a45f8/msodbcsql18_18.4.1.1-1_amd64.apk \
+    && curl -O https://download.microsoft.com/download/7/6/d/76de322a-d860-4894-9945-f0cc5d6a45f8/mssql-tools18_18.4.1.1-1_amd64.apk \
+    && curl -O https://download.microsoft.com/download/7/6/d/76de322a-d860-4894-9945-f0cc5d6a45f8/msodbcsql18_18.4.1.1-1_amd64.sig \
+    && curl -O https://download.microsoft.com/download/7/6/d/76de322a-d860-4894-9945-f0cc5d6a45f8/mssql-tools18_18.4.1.1-1_amd64.sig \
+    && curl https://packages.microsoft.com/keys/microsoft.asc | gpg --import - \
+    && gpg --verify msodbcsql18_18.4.1.1-1_amd64.sig msodbcsql18_18.4.1.1-1_amd64.apk \
+    && gpg --verify mssql-tools18_18.4.1.1-1_amd64.sig mssql-tools18_18.4.1.1-1_amd64.apk \
+    && apk add --allow-untrusted msodbcsql18_18.4.1.1-1_amd64.apk mssql-tools18_18.4.1.1-1_amd64.apk \
+    && rm *.apk *.sig
 
-# Instalar los controladores ODBC de SQL Server
-#RUN ACCEPT_EULA=Y apt-get install -y msodbcsql17
+# Copiar el instalador de extensiones PHP desde la imagen oficial
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/install-php-extensions
 
-# Instalar las extensiones de PHP necesarias para SQL Server
-#RUN docker-php-ext-install pdo && docker-php-ext-enable pdo
-#RUN pecl install sqlsrv pdo_sqlsrv \
-#    && docker-php-ext-enable sqlsrv pdo_sqlsrv
+# Asignar permisos y ejecutar la instalación de extensiones
+RUN chmod +x /usr/bin/install-php-extensions \
+    && sync \
+    && install-php-extensions \
+        bcmath \
+        ds \
+        exif \
+        gd \
+        intl \
+        opcache \
+        pcntl \
+        pdo_sqlsrv \
+        redis \
+        sqlsrv \
+        zip
 
-# Reiniciar Apache para aplicar los cambios
-#RUN service apache2 restart
-
-# Copiar los archivos de la aplicación al directorio web del contenedor
-COPY ../data/src/ /var/www/html
-
-# Establecer el directorio de trabajo
-WORKDIR /var/www/html
-
-# Configurar los puertos y los volúmenes según sea necesario
-EXPOSE 80
-VOLUME ["/var/www/html"]
+# Definir el directorio de trabajo
+WORKDIR /var/www
