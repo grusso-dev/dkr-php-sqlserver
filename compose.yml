@@ -45,7 +45,7 @@ services:
     image: alpine:latest
     container_name: sql_backup_cron
     volumes:
-      - ./backup_sqlserver.sh:/usr/local/bin/backup_sqlserver.sh
+      - ./data/sqlserver/backups/backup_sqlserver.sh:/usr/local/bin/backup_sqlserver.sh
       - ./data/sqlserver/backups:/backups
     depends_on:
       - sqlserver
