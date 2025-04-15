@@ -15,94 +15,75 @@ It's ideal for developers who want to build or test PHP applications with a SQL 
 ---
 
 ## 📁 Folder Structure
+
 ```
 .
 ├── compose.yaml
 ├── data
-|    └─ nginx
-|    |    └── default.conf
-|    ├── php
-|    ├── sqlserver
-|    |      └── sql_data 👉 #Recordar derle permisos de lectura y escritura (chmod -R 777 sql_data)
-|    └── src
-|         └── index.php
-└──php
-    └── Dockerfile
-
+│   ├── src                # Your PHP application code
+│   ├── nginx
+│   │   └── default.conf   # Custom Nginx configuration
+│   └── sqlserver
+│       └── sql_data       # Persistent database files
+└── php
+    └── Dockerfile         # Dockerfile for PHP setup
 ```
 
-[_compose.yaml_](compose.yaml)
-```
-#version: '3.8'
-services:
-  php:
-    build:
-      context: ./php
-      dockerfile: Dockerfile
-    container_name: php_app
-    volumes:
-      - ../data/src:/var/www
-    expose:
-      - 9000
-    depends_on:
-      - sqlserver
-    networks:
-      - app-network
+---
 
-  nginx:
-    image: nginx:alpine
-    container_name: nginx_web
-    ports:
-      - "8080:80"
-    volumes:
-      - ../data/src:/var/www
-      - ./data/nginx/default.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - php
-    networks:
-      - app-network
+## 🚀 How to Use
 
-  sqlserver:
-    image: mcr.microsoft.com/mssql/server:2019-latest
-    container_name: sql_server
-    environment:
-      SA_PASSWORD: "TuPassword123!"
-      ACCEPT_EULA: "Y"
-    volumes:
-      - ./data/sqlserver/sql_data:/var/opt/mssql
-    ports:
-      - "1433:1433"
-    networks:
-      - app-network
+1. **Clone this repository**:
 
-networks:
-  app-network:
-    driver: bridge
+   ```bash
+   git clone https://github.com/your-username/your-repo-name.git
+   cd your-repo-name
+   ```
+
+2. **Start the containers**:
+
+   ```bash
+   docker compose up --build -d
+   ```
+
+3. **Access the app**: Open your browser and go to [http://localhost:8080](http://localhost:8080)
+
+---
+
+## 🔐 SQL Server Credentials (for development)
+
+- **User**: `sa`
+- **Password**: `TuPassword123!`
+- **Port**: `1433`
+
+> ⚠️ Make sure to change the password before using this in production.
+
+---
+
+## 🛠 Customize
+
+- Place your PHP code in the `data/src` folder.
+- Modify the `php/Dockerfile` to add extensions or change PHP versions.
+- Edit `data/nginx/default.conf` for custom Nginx routing or headers.
+
+---
+
+## 🪄 Stop and Clean
+
+To stop the containers:
+
+```bash
+docker compose down
 ```
 
-## Deploy with docker compose
+To remove volumes (including the database data):
 
-```
-$ docker compose up -d
-
-```
-
-## Expected result
-
-Listing containers must show one container running and the port mapping as below:
-```
-$ docker ps
-CONTAINER ID        IMAGE                        COMMAND                  CREATED             STATUS              PORTS                  NAMES
-2bc8271fee81        php-docker_web               "docker-php-entrypoi…"   About a minute ago  Up About a minute   0.0.0.0:80->80/tc    php-docker_web_1
+```bash
+docker compose down -v
 ```
 
-After the application starts, navigate to `http://localhost:8080` in your web browser or run:
-```
-$ curl localhost:8080
-Hello World!
-```
+---
 
-Stop and remove the containers
-```
-$ docker compose down
-```
+## 📝 License
+
+MIT – Feel free to use, modify, and share.
