@@ -1,3 +1,4 @@
+
 # 🚀 Docker Compose for PHP, Nginx, and SQL Server
 
 This project provides a simple and ready-to-use Docker Compose setup to run a development environment with **PHP**, **Nginx**, and **Microsoft SQL Server**.
@@ -65,6 +66,26 @@ It's ideal for developers who want to build or test PHP applications with a SQL 
 - Place your PHP code in the `data/src` folder.
 - Modify the `php/Dockerfile` to add extensions or change PHP versions.
 - Edit `data/nginx/default.conf` for custom Nginx routing or headers.
+
+---
+
+## 💾 Database Backup
+
+To make a backup of your SQL Server database from inside the container, use the script `backup_sqlserver.sh` included in this project.
+
+### Usage:
+
+```bash
+chmod +x backup_sqlserver.sh
+./backup_sqlserver.sh
+```
+
+This script will:
+- Create a backup of the database named `MyDatabase`.
+- Store it temporarily inside the container.
+- Copy it to the host in `./data/sqlserver/backups/`.
+
+You can change the database name and destination path by editing the script.
 
 ---
 
