@@ -7,35 +7,65 @@ Project structure:
 ```
 .
 ├── compose.yaml
+├── data
+|    └─ nginx
+|         └── default.conf
+|    ├── php
+|    ├── sqlserver
+|    └── src
+|         └── index.php
 └──php
-    ├── Dockerfile
-    └── src
-         └── index.php
+    └── Dockerfile
 
 ```
 
 [_compose.yaml_](compose.yaml)
 ```
-version: '3.1'
-
+#version: '3.8'
 services:
-  sqlserver:
-    image: mcr.microsoft.com/mssql/server:2019-CU3-ubuntu-18.04
-    container_name: sqlserver2019
-    ports:
-      - 1433:1433
-    environment:
-      ACCEPT_EULA: Y
-      SA_PASSWORD: Password01
-      SSQL_PID: Express
-    volumes:
-      - ./sqlserver-data:/var/opt/mssql
   php:
-    build: ./php
-    ports:
-      - 80:80
+    build:
+      context: ./php
+      dockerfile: Dockerfile
+    container_name: php_app
     volumes:
-      - ./php/src:/var/www/html
+      - ../data/src:/var/www
+    expose:
+      - 9000
+    depends_on:
+      - sqlserver
+    networks:
+      - app-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx_web
+    ports:
+      - "8080:80"
+    volumes:
+      - ../data/src:/var/www
+      - ./data/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+    networks:
+      - app-network
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sql_server
+    environment:
+      SA_PASSWORD: "TuPassword123!"
+      ACCEPT_EULA: "Y"
+    volumes:
+      - ./data/sqlserver/sql_data:/var/opt/mssql
+    ports:
+      - "1433:1433"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
 ```
 
 ## Deploy with docker compose
@@ -60,7 +90,7 @@ CONTAINER ID        IMAGE                        COMMAND                  CREATE
 2bc8271fee81        php-docker_web               "docker-php-entrypoi…"   About a minute ago  Up About a minute   0.0.0.0:80->80/tc    php-docker_web_1
 ```
 
-After the application starts, navigate to `http://localhost:80` in your web browser or run:
+After the application starts, navigate to `http://localhost:8080` in your web browser or run:
 ```
 $ curl localhost:80
 Hello World!
