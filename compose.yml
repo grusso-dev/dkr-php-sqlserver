@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     container_name: php_app
     volumes:
-      - .:/var/www
+      - .src:/var/www
     expose:
       - 9000
     depends_on:
