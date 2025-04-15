@@ -35,8 +35,25 @@ services:
       ACCEPT_EULA: "Y"
     volumes:
       - ./data/sqlserver/sql_data:/var/opt/mssql
+      - ./data/sqlserver/backups:/var/opt/mssql/backups  # carpeta para los backups
     ports:
       - "1433:1433"
+    networks:
+      - app-network
+
+  backup_cron:
+    image: alpine:latest
+    container_name: sql_backup_cron
+    volumes:
+      - ./backup_sqlserver.sh:/usr/local/bin/backup_sqlserver.sh
+      - ./data/sqlserver/backups:/backups
+    depends_on:
+      - sqlserver
+    entrypoint: /bin/sh -c "
+      apk add --no-cache bash curl msodbcsql17 unixodbc &&
+      chmod +x /usr/local/bin/backup_sqlserver.sh &&
+      echo '0 2 * * * /usr/local/bin/backup_sqlserver.sh >> /var/log/backup.log 2>&1' | crontab - &&
+      crond -f"
     networks:
       - app-network
 
