@@ -1,4 +1,3 @@
-# dkr-php-sqlserver
 # 🚀 Docker Compose for PHP, Nginx, and SQL Server
 
 This project provides a simple and ready-to-use Docker Compose setup to run a development environment with **PHP**, **Nginx**, and **Microsoft SQL Server**.
@@ -85,12 +84,6 @@ networks:
 
 ```
 $ docker compose up -d
-Creating network "php-docker_web" with the default driver
-Building web
-Step 1/6 : FROM php:7.2-apache
-...
-...
-Creating php-docker_web_1 ... done
 
 ```
 
@@ -105,7 +98,7 @@ CONTAINER ID        IMAGE                        COMMAND                  CREATE
 
 After the application starts, navigate to `http://localhost:8080` in your web browser or run:
 ```
-$ curl localhost:80
+$ curl localhost:8080
 Hello World!
 ```
 
