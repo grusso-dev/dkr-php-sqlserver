@@ -1,9 +1,21 @@
 # dkr-php-sqlserver
-Este proyecto consiste en crear un docker compose que me permita instalar un apache con php y conectar con una base de datos Sql Server en un entorno linux
+# 🚀 Docker Compose for PHP, Nginx, and SQL Server
 
-### PHP application with Apache2
+This project provides a simple and ready-to-use Docker Compose setup to run a development environment with **PHP**, **Nginx**, and **Microsoft SQL Server**.
 
-Project structure:
+It's ideal for developers who want to build or test PHP applications with a SQL Server backend in a containerized environment.
+
+---
+
+## 📦 Stack Overview
+
+- **PHP** – Built from a custom Dockerfile, runs the PHP application code.
+- **Nginx** – Lightweight web server to serve your PHP app.
+- **SQL Server 2019** – Official Microsoft image for development and testing.
+
+---
+
+## 📁 Folder Structure
 ```
 .
 ├── compose.yaml
