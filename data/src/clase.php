@@ -1,0 +1,3 @@
+<?
+return "Hola desde root";
+?>

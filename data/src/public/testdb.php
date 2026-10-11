@@ -1,9 +1,9 @@
 <?php
-$serverName = "sqlserver";
+$serverName = "192.168.0.84";
 $connectionOptions = [
-    "Database" => "PersonasDB",
+    "Database" => "testDB",
     "Uid" => "sa",
-    "PWD" => "TuPassword123!",
+    "PWD" => "ctxEXAMPLE2626...",
     "Encrypt" => "no"
 ];
 
@@ -15,7 +15,7 @@ if ($conn === false) {
     exit;
 }
 
-$sql = "SELECT Nombre, Apellido FROM Personas";
+$sql = "SELECT * FROM TABLA";
 $stmt = sqlsrv_query($conn, $sql);
 
 if ($stmt === false) {
@@ -26,7 +26,7 @@ if ($stmt === false) {
 
 echo "<h2>Lista de personas:</h2><ul>";
 while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
-    echo "<li>{$row['Nombre']} {$row['Apellido']}</li>";
+    echo "<li>{$row['primari']} {$row['columna']}</li>";
 }
 echo "</ul>";
 
